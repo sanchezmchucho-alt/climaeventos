@@ -1,4 +1,4 @@
-package com.climaEventos;
+package com.climaeventos;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -11,15 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Eventos aleatorios de clima y mundo. Casi todo se hace con comandos vanilla.
- * Prueba manual:  /evento   (aleatorio)   o   /evento meteoritos
- */
 public class ClimaEventos implements ModInitializer {
 
-    // ===== AJUSTES (en ticks: 20 ticks = 1 segundo) =====
-    private static final int MIN_TICKS = 20 * 60 * 3;  // 3 minutos
-    private static final int MAX_TICKS = 20 * 60 * 6;  // 6 minutos
+    private static final int MIN_TICKS = 20 * 60 * 3;
+    private static final int MAX_TICKS = 20 * 60 * 6;
 
     private static final Random RNG = new Random();
     private static int countdown = MIN_TICKS;
@@ -87,7 +82,6 @@ public class ClimaEventos implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        // Temporizador de eventos automaticos
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (server.getPlayerList().getPlayers().isEmpty()) return;
             if (--countdown <= 0) {
@@ -96,7 +90,6 @@ public class ClimaEventos implements ModInitializer {
             }
         });
 
-        // Comando de prueba: /evento  y  /evento <nombre>
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             var root = Commands.literal("evento").executes(ctx -> {
                 trigger(ctx.getSource().getServer(), EVENTS.get(RNG.nextInt(EVENTS.size())));
@@ -128,15 +121,12 @@ public class ClimaEventos implements ModInitializer {
         ev.action().run(server, names);
     }
 
-    // ---------- utilidades ----------
     private static String text(String t, String color) {
         return "{\"text\":\"" + t + "\",\"color\":\"" + color + "\"}";
     }
 
-    /** numero entre -r y r */
     private static int off(int r) { return RNG.nextInt(r * 2 + 1) - r; }
 
-    /** numero entre -r y r pero nunca cerca de 0 (a 6+ bloques del jugador) */
     private static int far(int r) {
         int v = 6 + RNG.nextInt(Math.max(1, r - 5));
         return RNG.nextBoolean() ? v : -v;
