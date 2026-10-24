@@ -1,4 +1,4 @@
-package com.climaeventos;
+package com.climaEventos;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
